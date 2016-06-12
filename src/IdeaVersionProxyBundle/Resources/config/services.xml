@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+
+    <services>
+        <service id="espend_idea_version_proxy.guzzle_client"
+                 class="GuzzleHttp\Client"
+                 public="false">
+                <argument type="collection">
+                    <argument key="timeout">5</argument >
+                    <argument key="connection_timeout">5</argument >
+                    <argument key="allow_redirects">false</argument >
+                </argument>
+        </service>
+
+        <service class="espend\IdeaVersionProxyBundle\Version\Collector"
+                 id="espend_idea_version_proxy.version_collector"
+                 public="false">
+            <argument id="espend_idea_version_proxy.version.request" type="service"/>
+        </service>
+
+        <service class="espend\IdeaVersionProxyBundle\Version\Request"
+                 id="espend_idea_version_proxy.version.request"
+                 public="false">
+            <argument id="espend_idea_version_proxy.guzzle_client" type="service"/>
+            <argument type="service" id="idea_version_cache"/>
+        </service>
+
+        <service class="espend\IdeaVersionProxyBundle\Controller\DownloadController"
+                 id="espend_idea_version_proxy.controller.download">
+            <argument type="service" id="espend_idea_version_proxy.version_collector"/>
+        </service>
+
+    </services>
+
+</container>

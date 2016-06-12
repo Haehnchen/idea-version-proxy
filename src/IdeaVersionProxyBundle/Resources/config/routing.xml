@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <route id="espend_idea_version_proxy_redirect_latest" path="/version-proxy/{pluginId}/latest">
+        <default key="_controller">espend_idea_version_proxy.controller.download:latestAction</default>
+        <requirement key="pluginId">[\d]{3,5}</requirement>
+    </route>
+
+    <route id="espend_idea_version_proxy_redirect" path="/version-proxy/{pluginId}/{version}">
+        <default key="_controller">espend_idea_version_proxy.controller.download:downloadAction</default>
+        <requirement key="pluginId">[\d]{3,5}</requirement>
+        <requirement key="version">[\d\.]{1,10}</requirement>
+    </route>
+
+    <route id="espend_idea_version_proxy_redirect_latest_json" path="/version-proxy/{pluginId}/latest.json">
+        <default key="_controller">espend_idea_version_proxy.controller.download:latestJsonAction</default>
+        <requirement key="pluginId">[\d]{3,5}</requirement>
+    </route>
+
+    <route id="espend_idea_version_proxy_redirect_json" path="/version-proxy/{pluginId}/{version}.json">
+        <default key="_controller">espend_idea_version_proxy.controller.download:downloadJsonAction</default>
+        <requirement key="pluginId">[\d]{3,5}</requirement>
+        <requirement key="version">[\d\.]{1,10}</requirement>
+    </route>
+
+</routes>
