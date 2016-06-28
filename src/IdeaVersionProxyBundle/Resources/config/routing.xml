@@ -12,7 +12,7 @@
     <route id="espend_idea_version_proxy_redirect" path="/version-proxy/{pluginId}/{version}">
         <default key="_controller">espend_idea_version_proxy.controller.download:downloadAction</default>
         <requirement key="pluginId">[\d]{3,5}</requirement>
-        <requirement key="version">[\d\.]{1,10}</requirement>
+        <requirement key="version">[\d\.]{1,15}</requirement>
     </route>
 
     <route id="espend_idea_version_proxy_redirect_latest_json" path="/version-proxy/{pluginId}/latest.json">
@@ -23,7 +23,7 @@
     <route id="espend_idea_version_proxy_redirect_json" path="/version-proxy/{pluginId}/{version}.json">
         <default key="_controller">espend_idea_version_proxy.controller.download:downloadJsonAction</default>
         <requirement key="pluginId">[\d]{3,5}</requirement>
-        <requirement key="version">[\d\.]{1,10}</requirement>
+        <requirement key="version">[\d\.]{1,15}</requirement>
     </route>
 
 </routes>
