@@ -2,9 +2,9 @@
 
 namespace espend\IdeaVersionProxyBundle\Version;
 
-use Doctrine\Common\Cache\Cache;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
+use Psr\Cache\CacheItemPoolInterface;
 
 /**
  * @author Daniel Espendiller <daniel@espendiller.net>
@@ -22,7 +22,7 @@ class Request
     private $baseUrl;
 
     /**
-     * @var Cache
+     * @var CacheItemPoolInterface
      */
     private $cache;
 
@@ -33,7 +33,7 @@ class Request
 
     public function __construct(
         ClientInterface $client,
-        Cache $cache,
+        CacheItemPoolInterface $cache,
         $baseUrl = 'http://plugins.jetbrains.com'
     )
     {
@@ -42,11 +42,19 @@ class Request
         $this->cache = $cache;
     }
 
+    /**
+     * Content
+     *
+     * @param $url
+     * @return mixed|null|string
+     */
     public function request($url)
     {
-        $hash = md5($url);
-        if(false !== $content = $this->cache->fetch($hash)) {
-            return $content;
+        $hash = 'request-version-proxy-' . md5($url);
+        $cache = $this->cache->getItem($hash);
+
+        if($cache->isHit()) {
+            return $cache->get();
         }
 
         $content = null;
@@ -57,27 +65,10 @@ class Request
         } catch (RequestException $e) {
         }
 
-        $this->cache->save($hash, $content, $this->lifetime);
+        $this->cache->save(
+            $cache->set($content)->expiresAfter($this->lifetime)
+        );
         
-        return $content;
-    }
-
-    public function requestLocation($url)
-    {
-        $hash = md5($url);
-        if(false !== $content = $this->cache->fetch($hash)) {
-            return $content;
-        }
-
-        $content = null;
-        try {
-            $content = $this->client->request('GET', $this->baseUrl . '/' . ltrim($url, '/'))
-                ->getHeaderLine('Location');
-        } catch (RequestException $e) {
-        }
-
-        $this->cache->save($hash, $content, $this->lifetime);
-
         return $content;
     }
 }

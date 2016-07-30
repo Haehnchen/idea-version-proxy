@@ -2,57 +2,59 @@
 
 namespace espend\IdeaVersionProxyBundle\Version;
 
-use Symfony\Component\DomCrawler\Crawler;
-
 /**
  * @author Daniel Espendiller <daniel@espendiller.net>
  */
 class Collector
 {
+    /**
+     * Base url for file storage of JetBrains repository
+     */
+    const PLUGIN_DOWNLOAD_BASE = 'https://plugins.jetbrains.com/files/';
 
     /**
      * @var \espend\IdeaVersionProxyBundle\Version\Request
      */
     private $request;
 
+    /**
+     * @param Request $request
+     */
     public function __construct(Request $request)
     {
         $this->request = $request;
     }
 
     /**
-     * @param $pluginId
-     * @return array
+     * @param string $pluginId
+     * @return array<string, string>
      */
     private function collect($pluginId)
     {
-        if(null === $contents = $this->request->request('/plugin/' . $pluginId . '?showAllUpdates=true')) {
+        if(null === $contents = $this->request->request('plugin/updates?pluginId='. $pluginId .'&start=0&size=75')) {
             return [];
         }
 
-        $crawler = new Crawler($contents);
+        if(!($version = json_decode($contents, true)) || !isset($version['updates'])) {
+            return [];
+        }
 
         $versions = [];
-
-        foreach($crawler->filter('table.version_table tr td:first-child a') as $child) {
-            /** @var $child \DOMElement */
-
-            $query = [];
-            parse_str(parse_url($child->getAttribute('href'), PHP_URL_QUERY), $query);
-            if(!isset($query['updateId'])) {
+        foreach($version['updates'] as $update) {
+            if(!isset($update['updateVersion'], $update['file'])) {
                 continue;
             }
 
-            $versions[$child->textContent] = '/plugin/download?updateId=' . $query['updateId'];
+            $versions[$update['updateVersion']] = $update['file'];
         }
 
         return $versions;
     }
 
     /**
-     * @param $pluginId
-     * @param $version
-     * @return mixed|null
+     * @param string $pluginId
+     * @param string $version
+     * @return string|null
      */
     private function find($pluginId, $version)
     {
@@ -65,8 +67,8 @@ class Collector
     }
 
     /**
-     * @param $pluginId
-     * @param $version
+     * @param string $pluginId
+     * @param string $version
      * @return null|string
      */
     public function resolve($pluginId, $version)
@@ -75,11 +77,11 @@ class Collector
             return null;
         }
 
-        return $this->request->requestLocation($url);
+        return self::PLUGIN_DOWNLOAD_BASE . ltrim($url, '/');
     }
 
     /**
-     * @param $pluginId
+     * @param string $pluginId
      * @return null|string
      */
     public function latest($pluginId)
@@ -91,6 +93,6 @@ class Collector
         
         uksort($versions, 'version_compare');
 
-        return $this->request->requestLocation(end($versions));
+        return self::PLUGIN_DOWNLOAD_BASE . ltrim(end($versions), '/');
     }
 }

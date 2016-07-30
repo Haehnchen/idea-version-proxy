@@ -33,7 +33,7 @@ class DownloadController
     /**
      * @param string $pluginId
      * @param string $version
-     * @return RedirectResponse
+     * @return Response
      */
     public function downloadAction($pluginId, $version)
     {
@@ -47,7 +47,7 @@ class DownloadController
 
     /**
      * @param string $pluginId
-     * @return RedirectResponse
+     * @return Response
      */
     public function latestAction($pluginId)
     {

@@ -26,7 +26,7 @@
                  id="espend_idea_version_proxy.version.request"
                  public="false">
             <argument id="espend_idea_version_proxy.guzzle_client" type="service"/>
-            <argument type="service" id="idea_version_cache"/>
+            <argument type="service" id="cache.app"/>
         </service>
 
         <service class="espend\IdeaVersionProxyBundle\Controller\DownloadController"

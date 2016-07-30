@@ -18,6 +18,14 @@ public function registerBundles()
 }
 ```
 
+### Routing
+
+```
+# app/routing.xml
+espend_version_proxy:
+    resource: "@espendIdeaVersionProxyBundle/Resources/config/routing.xml"
+```
+
 ## Endpoints
 
 ```
